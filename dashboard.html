@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Registration — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="brand-lockup">
+      <div class="logo-slot" aria-label="IIPC logo">
+        <img src="logo.png" alt="IIPC logo" onerror="this.style.display='none'" />
+        <span>IIPC</span>
+      </div>
+      <div>
+        <h1>IIPC Registration</h1>
+        <p>Administrator Dashboard</p>
+      </div>
+    </div>
+    <button class="btn-logout" id="logout-btn">Log out</button>
+  </header>
+
+  <main class="dashboard-main">
+    <!-- Summary -->
+    <section class="summary-grid">
+      <div class="summary-card">
+        <p class="label">Program Fee (GHS)</p>
+        <input type="number" id="program-fee" min="0" value="150" />
+      </div>
+      <div class="summary-card">
+        <p class="label">Registrants</p>
+        <p class="value" id="stat-count">0</p>
+      </div>
+      <div class="summary-card">
+        <p class="label">Fully Paid</p>
+        <p class="value" id="stat-paid" style="color:#2F6844;">0</p>
+      </div>
+      <div class="summary-card">
+        <p class="label">Total Collected</p>
+        <p class="value" id="stat-total" style="color:#6B1424;">GHS 0.00</p>
+      </div>
+    </section>
+
+    <!-- Add registrant form -->
+    <section class="panel">
+      <h2>Register a Participant</h2>
+      <div class="form-grid">
+        <div>
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Full name" />
+        </div>
+        <div>
+          <label for="contact">Contact</label>
+          <input type="text" id="contact" placeholder="Phone or email" />
+        </div>
+        <div>
+          <label for="occupation">Occupation</label>
+          <input type="text" id="occupation" placeholder="Occupation" />
+        </div>
+        <div>
+          <label for="tshirt">T-Shirt Color</label>
+          <select id="tshirt">
+            <option value="yellow">Yellow</option>
+            <option value="blue-black">Blue-Black</option>
+            <option value="red">Red</option>
+            <option value="white">White</option>
+          </select>
+        </div>
+        <div>
+          <label for="amount-paid">Amount Paid (GHS)</label>
+          <input type="number" id="amount-paid" min="0" placeholder="0.00" />
+        </div>
+        <div>
+          <button class="btn-add" id="add-btn">＋ Add Registrant</button>
+        </div>
+      </div>
+      <p id="form-error" class="error-text" style="display:none; margin-top:14px;"></p>
+    </section>
+
+    <!-- Table -->
+    <section class="table-section">
+      <div class="table-heading">
+        <div>
+          <h2>Registered Participants</h2>
+          <p class="print-subtitle">Program Registration List</p>
+        </div>
+        <div class="table-actions">
+          <label class="search-field" for="participant-search">
+            <span>Search</span>
+            <input type="search" id="participant-search" placeholder="Name or contact" />
+          </label>
+          <button class="btn-print" id="print-btn" type="button">Print List</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Occupation</th>
+              <th>T-Shirt</th>
+              <th>Payment Status</th>
+              <th>Paid (GHS)</th>
+              <th>Entered</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="registrants-body">
+            <tr class="empty-row"><td colspan="8">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

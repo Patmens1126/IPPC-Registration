@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — IPPC Registration</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <p class="login-badge">🛡 ADMIN ACCESS</p>
+      <h1>Login</h1>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <div class="field-input">
+            <input type="email" id="email" placeholder="you@church.org" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="field-input">
+            <input type="password" id="password" placeholder="••••••••" required />
+          </div>
+        </div>
+
+        <p id="error-text" class="error-text" style="display:none;"></p>
+
+        <div class="field-row">
+          <label><input type="checkbox" id="remember" /> Remember me</label>
+          <span class="forgot-link">Forgot Password</span>
+        </div>
+
+        <button type="submit" class="btn-primary" id="login-btn">Login</button>
+      </form>
+
+      <p class="login-footnote">This portal is restricted to program administrators.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
