@@ -7,7 +7,10 @@ create table if not exists registrants (
   name text not null,
   contact text not null,
   occupation text not null,
+  reference text,
   tshirt_color text not null check (tshirt_color in ('yellow', 'blue-black', 'red', 'white')),
+  tshirt_size text not null default 'medium' check (tshirt_size in ('small', 'medium', 'large', 'xl', 'xxl', 'xxxl')),
+  amount_due numeric not null default 100,
   amount_paid numeric not null default 0,
   created_at timestamptz not null default now()
 );
@@ -15,21 +18,29 @@ create table if not exists registrants (
 alter table registrants enable row level security;
 
 alter table registrants add column if not exists user_id uuid references auth.users(id) on delete set null;
+alter table registrants add column if not exists reference text;
 alter table registrants add column if not exists tshirt_size text not null default 'medium';
+alter table registrants add column if not exists amount_due numeric not null default 100;
+update registrants
+set amount_due = case when lower(trim(coalesce(reference, ''))) = 'soul' then 50 else 100 end;
 alter table registrants drop constraint if exists registrants_tshirt_size_check;
 alter table registrants add constraint registrants_tshirt_size_check
   check (tshirt_size in ('small', 'medium', 'large', 'xl', 'xxl', 'xxxl'));
+alter table registrants drop constraint if exists registrants_amount_due_check;
+alter table registrants add constraint registrants_amount_due_check
+  check (amount_due = case when lower(trim(coalesce(reference, ''))) = 'soul' then 50 else 100 end);
 create unique index if not exists one_registration_per_user
   on registrants (user_id) where user_id is not null;
 
 -- Table: program_settings (single row holding the program fee)
 create table if not exists program_settings (
   id integer primary key,
-  fee numeric not null default 50
+  fee numeric not null default 100
 );
 
-insert into program_settings (id, fee) values (1, 50)
+insert into program_settings (id, fee) values (1, 100)
   on conflict (id) do nothing;
+update program_settings set fee = 100 where id = 1 and fee = 50;
 
 alter table program_settings enable row level security;
 
@@ -175,7 +186,7 @@ create policy "Admins can update settings"
 drop view if exists registrants_user_view;
 create view registrants_user_view
   with (security_invoker = true) as
-  select id, user_id, name, contact, occupation, tshirt_color, tshirt_size, created_at
+  select id, user_id, name, contact, occupation, reference, tshirt_color, tshirt_size, amount_due, created_at
   from registrants;
 revoke all on registrants_user_view from public;
 grant select on registrants_user_view to authenticated;

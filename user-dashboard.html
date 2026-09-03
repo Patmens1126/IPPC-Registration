@@ -45,6 +45,10 @@
           <label for="occupation">Occupation</label>
           <input type="text" id="occupation" placeholder="Occupation" />
         </div>
+        <div class="reference-field">
+          <label for="reference">Reference <span>(optional)</span></label>
+          <input type="text" id="reference" placeholder="Optional reference" autocomplete="off" />
+        </div>
         <div>
           <label for="tshirt">T-Shirt Color</label>
           <select id="tshirt">
@@ -79,12 +83,14 @@
             <th>Name</th>
             <th>Contact</th>
             <th>Occupation</th>
+            <th>Reference</th>
             <th>T-Shirt</th>
             <th>Size</th>
+            <th>Due (GHS)</th>
           </tr>
         </thead>
         <tbody id="my-registration-body">
-          <tr class="empty-row"><td colspan="5">Loading...</td></tr>
+          <tr class="empty-row"><td colspan="7">Loading...</td></tr>
         </tbody>
       </table>
     </section>

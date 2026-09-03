@@ -8,6 +8,10 @@ const TSHIRT_LABELS = {
   white: { label: "White", swatch: "#F2EFEA" },
 };
 
+function getAmountDue(reference) {
+  return reference.trim().toLowerCase() === "soul" ? 50 : 100;
+}
+
 // ---------- Auth guard ----------
 async function guardSession() {
   const { data } = await supabaseClient.auth.getSession();
@@ -53,12 +57,12 @@ async function loadRegistrationStatus() {
 async function loadMyRegistration() {
   const { data, error } = await supabaseClient
     .from("registrants_user_view")
-    .select("name, contact, occupation, tshirt_color, tshirt_size")
+    .select("name, contact, occupation, reference, tshirt_color, tshirt_size, amount_due")
     .eq("user_id", currentUserId)
     .maybeSingle();
   if (error) return;
   if (!data) {
-    registrationBody.innerHTML = `<tr class="empty-row"><td colspan="5">You have not registered yet.</td></tr>`;
+    registrationBody.innerHTML = `<tr class="empty-row"><td colspan="7">You have not registered yet.</td></tr>`;
     return;
   }
   const tshirt = TSHIRT_LABELS[data.tshirt_color] || { label: data.tshirt_color, swatch: "#ccc" };
@@ -66,8 +70,10 @@ async function loadMyRegistration() {
     <td>${escapeHtml(data.name)}</td>
     <td>${escapeHtml(data.contact)}</td>
     <td>${escapeHtml(data.occupation)}</td>
+    <td>${escapeHtml(data.reference || "-")}</td>
     <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
     <td>${escapeHtml(data.tshirt_size || "medium")}</td>
+    <td>GHS ${Number(data.amount_due || getAmountDue(data.reference || "")).toFixed(2)}</td>
   </tr>`;
 }
 
@@ -82,6 +88,7 @@ async function addRegistrant() {
   const name = document.getElementById("name").value.trim();
   const contact = document.getElementById("contact").value.trim();
   const occupation = document.getElementById("occupation").value.trim();
+  const reference = document.getElementById("reference").value.trim();
   const tshirt = document.getElementById("tshirt").value;
   const tshirtSize = document.getElementById("tshirt-size").value;
 
@@ -98,6 +105,8 @@ async function addRegistrant() {
     name,
     contact,
     occupation,
+    reference: reference || null,
+    amount_due: getAmountDue(reference),
     tshirt_color: tshirt,
     tshirt_size: tshirtSize,
   });
@@ -111,6 +120,7 @@ async function addRegistrant() {
   document.getElementById("name").value = "";
   document.getElementById("contact").value = "";
   document.getElementById("occupation").value = "";
+  document.getElementById("reference").value = "";
   document.getElementById("tshirt").value = "yellow";
   document.getElementById("tshirt-size").value = "medium";
 

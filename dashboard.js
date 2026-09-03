@@ -15,7 +15,7 @@ const searchInput = document.getElementById("participant-search");
 const TSHIRT_SIZES = ["small", "medium", "large", "xl", "xxl", "xxxl"];
 
 let registrants = [];
-let programFee = 50;
+let programFee = 100;
 let searchTerm = "";
 
 // ---------- Auth guard ----------
@@ -47,6 +47,10 @@ function getStatus(paid, fee) {
   if (!paid || paid <= 0) return "unpaid";
   if (paid >= fee) return "paid";
   return "partial";
+}
+
+function getAmountDue(reference) {
+  return reference.trim().toLowerCase() === "soul" ? 50 : 100;
 }
 
 function statusBadgeHtml(paid, fee) {
@@ -95,13 +99,16 @@ async function loadRegistrants() {
 // ---------- Rendering ----------
 function render() {
   statCount.textContent = registrants.length;
-  const paidCount = registrants.filter((r) => getStatus(r.amount_paid, programFee) === "paid").length;
+  const paidCount = registrants.filter((r) => {
+    const amountDue = Number(r.amount_due) || getAmountDue(r.reference || "");
+    return getStatus(r.amount_paid, amountDue) === "paid";
+  }).length;
   statPaid.textContent = paidCount;
   const totalCollected = registrants.reduce((sum, r) => sum + Number(r.amount_paid), 0);
   statTotal.textContent = `GHS ${totalCollected.toFixed(2)}`;
 
   const visibleRegistrants = registrants.filter((registrant) => {
-    const searchableText = `${registrant.name} ${registrant.contact} ${registrant.occupation}`.toLowerCase();
+    const searchableText = `${registrant.name} ${registrant.contact} ${registrant.occupation} ${registrant.reference || ""}`.toLowerCase();
     return searchableText.includes(searchTerm);
   });
 
@@ -109,7 +116,7 @@ function render() {
     const message = registrants.length === 0
       ? "No registrants yet. Add the first participant above."
       : "No participants match your search.";
-    body.innerHTML = `<tr class="empty-row"><td colspan="9">${message}</td></tr>`;
+    body.innerHTML = `<tr class="empty-row"><td colspan="11">${message}</td></tr>`;
     return;
   }
 
@@ -117,7 +124,8 @@ function render() {
     .map((r) => {
       const tshirt = TSHIRT_LABELS[r.tshirt_color] || { label: r.tshirt_color, swatch: "#ccc" };
       const amountPaid = Number(r.amount_paid) || 0;
-      const paymentEditor = getStatus(amountPaid, programFee) === "paid"
+      const amountDue = Number(r.amount_due) || getAmountDue(r.reference || "");
+      const paymentEditor = getStatus(amountPaid, amountDue) === "paid"
         ? amountPaid.toFixed(2)
         : `<input class="payment-input" type="number" min="0" step="0.01" value="${amountPaid.toFixed(2)}" data-id="${r.id}" aria-label="Amount paid for ${escapeHtml(r.name)}" />`;
       return `
@@ -125,9 +133,11 @@ function render() {
           <td>${escapeHtml(r.name)}</td>
           <td>${escapeHtml(r.contact)}</td>
           <td>${escapeHtml(r.occupation)}</td>
+          <td>${escapeHtml(r.reference || "-")}</td>
           <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
           <td>${sizeEditor(r.tshirt_size || "medium", r.id, r.name)}</td>
-          <td>${statusBadgeHtml(amountPaid, programFee)}</td>
+          <td>GHS ${amountDue.toFixed(2)}</td>
+          <td>${statusBadgeHtml(amountPaid, amountDue)}</td>
           <td>${paymentEditor}</td>
           <td class="entered-cell">${formatDateTime(r.created_at)}</td>
           <td class="center-cell no-print"><button class="btn-delete" data-id="${r.id}">Remove</button></td>
@@ -167,6 +177,7 @@ async function addRegistrant() {
   const name = document.getElementById("name").value.trim();
   const contact = document.getElementById("contact").value.trim();
   const occupation = document.getElementById("occupation").value.trim();
+  const reference = document.getElementById("reference").value.trim();
   const tshirt = document.getElementById("tshirt").value;
   const tshirtSize = document.getElementById("tshirt-size").value;
   const amountPaid = parseFloat(document.getElementById("amount-paid").value) || 0;
@@ -183,6 +194,8 @@ async function addRegistrant() {
     name,
     contact,
     occupation,
+    reference: reference || null,
+    amount_due: getAmountDue(reference),
     tshirt_color: tshirt,
     tshirt_size: tshirtSize,
     amount_paid: amountPaid,
@@ -197,6 +210,7 @@ async function addRegistrant() {
   document.getElementById("name").value = "";
   document.getElementById("contact").value = "";
   document.getElementById("occupation").value = "";
+  document.getElementById("reference").value = "";
   document.getElementById("amount-paid").value = "";
   document.getElementById("tshirt").value = "yellow";
   document.getElementById("tshirt-size").value = "medium";
