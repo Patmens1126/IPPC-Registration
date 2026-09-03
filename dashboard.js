@@ -12,6 +12,7 @@ const statPaid = document.getElementById("stat-paid");
 const statTotal = document.getElementById("stat-total");
 const formError = document.getElementById("form-error");
 const searchInput = document.getElementById("participant-search");
+const TSHIRT_SIZES = ["small", "medium", "large"];
 
 let registrants = [];
 let programFee = 50;
@@ -54,6 +55,13 @@ function statusBadgeHtml(paid, fee) {
   if (status === "partial")
     return `<span class="status-badge status-partial">GHS ${paid.toFixed(2)} PAID</span>`;
   return `<span class="status-badge status-unpaid">NOT PAID</span>`;
+}
+
+function sizeEditor(size, id, name) {
+  const options = TSHIRT_SIZES
+    .map((value) => `<option value="${value}" ${value === size ? "selected" : ""}>${value[0].toUpperCase() + value.slice(1)}</option>`)
+    .join("");
+  return `<select class="size-input" data-id="${id}" aria-label="T-shirt size for ${escapeHtml(name)}">${options}</select>`;
 }
 
 // ---------- Data loading ----------
@@ -118,7 +126,7 @@ function render() {
           <td>${escapeHtml(r.contact)}</td>
           <td>${escapeHtml(r.occupation)}</td>
           <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
-          <td>${escapeHtml(r.tshirt_size || "medium")}</td>
+          <td>${sizeEditor(r.tshirt_size || "medium", r.id, r.name)}</td>
           <td>${statusBadgeHtml(amountPaid, programFee)}</td>
           <td>${paymentEditor}</td>
           <td class="entered-cell">${formatDateTime(r.created_at)}</td>
@@ -132,6 +140,9 @@ function render() {
   });
   body.querySelectorAll(".payment-input").forEach((input) => {
     input.addEventListener("change", () => updatePayment(input.dataset.id, input.value));
+  });
+  body.querySelectorAll(".size-input").forEach((input) => {
+    input.addEventListener("change", () => updateTshirtSize(input.dataset.id, input.value));
   });
 }
 
@@ -215,6 +226,23 @@ async function updatePayment(id, value) {
 
   if (error) {
     formError.textContent = "Could not update payment: " + error.message;
+    formError.style.display = "block";
+    return;
+  }
+
+  await loadRegistrants();
+}
+
+async function updateTshirtSize(id, size) {
+  if (!TSHIRT_SIZES.includes(size)) return;
+  formError.style.display = "none";
+  const { error } = await supabaseClient
+    .from("registrants")
+    .update({ tshirt_size: size })
+    .eq("id", id);
+
+  if (error) {
+    formError.textContent = "Could not update T-shirt size: " + error.message;
     formError.style.display = "block";
     return;
   }

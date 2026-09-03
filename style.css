@@ -496,6 +496,18 @@ tbody tr:nth-child(even) { background: #FCF9F8; }
   font-size: 13px;
 }
 
+.size-input {
+  min-width: 92px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--white);
+  font-size: 13px;
+}
+
+.size-input:focus { border-color: var(--wine); outline: none; }
+
 .payment-input:focus { border-color: var(--wine); outline: none; }
 
 @media print {
