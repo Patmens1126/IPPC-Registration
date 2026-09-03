@@ -179,3 +179,31 @@ create view registrants_user_view
   from registrants;
 revoke all on registrants_user_view from public;
 grant select on registrants_user_view to authenticated;
+
+create or replace function public.get_registration_count()
+returns bigint
+language sql
+security definer
+set search_path = public
+as $$
+  select count(*) from public.registrants;
+$$;
+
+revoke all on function public.get_registration_count() from public;
+grant execute on function public.get_registration_count() to authenticated;
+
+create or replace function public.has_my_registration()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.registrants
+    where user_id = auth.uid()
+  );
+$$;
+
+revoke all on function public.has_my_registration() from public;
+grant execute on function public.has_my_registration() to authenticated;

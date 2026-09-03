@@ -1,11 +1,3 @@
-const TSHIRT_LABELS = {
-  yellow: { label: "Yellow", swatch: "#D4A017" },
-  "blue-black": { label: "Blue-Black", swatch: "#1B2A4A" },
-  red: { label: "Red", swatch: "#A32638" },
-  white: { label: "White", swatch: "#F2EFEA" },
-};
-
-const body = document.getElementById("registrants-body");
 const statCount = document.getElementById("stat-count");
 const formError = document.getElementById("form-error");
 
@@ -36,48 +28,19 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
 // ---------- Data ----------
 let currentUserId = null;
 
-// The view excludes payment data and RLS limits it to the signed-in user's row.
-async function loadRegistrants() {
-  const { data, error } = await supabaseClient
-    .from("registrants_user_view")
-    .select("*")
-    .eq("user_id", currentUserId)
-    .order("created_at", { ascending: true });
-  if (!error) render(data || []);
+// The RPC returns only the total count and never exposes registrant rows.
+async function loadRegistrationCount() {
+  const { data, error } = await supabaseClient.rpc("get_registration_count");
+  if (!error) statCount.textContent = data ?? 0;
 }
 
-function render(registrants) {
-  statCount.textContent = registrants.length;
-
-  const hasRegistration = registrants.length > 0;
+async function loadRegistrationStatus() {
+  const { data, error } = await supabaseClient.rpc("has_my_registration");
+  if (error) return;
+  const hasRegistration = data === true;
   ["name", "contact", "occupation", "tshirt", "tshirt-size", "add-btn"].forEach((id) => {
     document.getElementById(id).disabled = hasRegistration;
   });
-
-  if (registrants.length === 0) {
-    body.innerHTML = `<tr class="empty-row"><td colspan="5">You have not registered yet.</td></tr>`;
-    return;
-  }
-
-  body.innerHTML = registrants
-    .map((r) => {
-      const tshirt = TSHIRT_LABELS[r.tshirt_color] || { label: r.tshirt_color, swatch: "#ccc" };
-      return `
-        <tr>
-          <td>${escapeHtml(r.name)}</td>
-          <td>${escapeHtml(r.contact)}</td>
-          <td>${escapeHtml(r.occupation)}</td>
-          <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
-          <td>${escapeHtml(r.tshirt_size || "medium")}</td>
-        </tr>`;
-    })
-    .join("");
-}
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str ?? "";
-  return div.innerHTML;
 }
 
 // ---------- Insert one personal registration (amount_paid always defaults to 0) ----------
@@ -122,7 +85,7 @@ async function addRegistrant() {
   document.getElementById("occupation").disabled = true;
   document.getElementById("tshirt").disabled = true;
   document.getElementById("add-btn").disabled = true;
-  await loadRegistrants();
+  await loadRegistrationCount();
 }
 
 document.getElementById("add-btn").addEventListener("click", addRegistrant);
@@ -133,5 +96,6 @@ document.getElementById("add-btn").addEventListener("click", addRegistrant);
   if (!ok) return;
   const { data: { user } } = await supabaseClient.auth.getUser();
   currentUserId = user.id;
-  await loadRegistrants();
+  await loadRegistrationCount();
+  await loadRegistrationStatus();
 })();
