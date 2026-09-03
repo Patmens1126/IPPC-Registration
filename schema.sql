@@ -8,6 +8,7 @@ create table if not exists registrants (
   contact text not null,
   occupation text not null,
   tshirt_color text not null check (tshirt_color in ('yellow', 'blue-black', 'red', 'white')),
+  tshirt_size text not null default 'medium' check (tshirt_size in ('small', 'medium', 'large')),
   amount_paid numeric not null default 0,
   created_at timestamptz not null default now()
 );
@@ -15,6 +16,10 @@ create table if not exists registrants (
 alter table registrants enable row level security;
 
 alter table registrants add column if not exists user_id uuid references auth.users(id) on delete set null;
+alter table registrants add column if not exists tshirt_size text not null default 'medium';
+alter table registrants drop constraint if exists registrants_tshirt_size_check;
+alter table registrants add constraint registrants_tshirt_size_check
+  check (tshirt_size in ('small', 'medium', 'large'));
 create unique index if not exists one_registration_per_user
   on registrants (user_id) where user_id is not null;
 
@@ -171,7 +176,7 @@ create policy "Admins can update settings"
 drop view if exists registrants_user_view;
 create view registrants_user_view
   with (security_invoker = true) as
-  select id, user_id, name, contact, occupation, tshirt_color, created_at
+  select id, user_id, name, contact, occupation, tshirt_color, tshirt_size, created_at
   from registrants;
 revoke all on registrants_user_view from public;
 grant select on registrants_user_view to authenticated;

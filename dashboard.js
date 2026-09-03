@@ -101,7 +101,7 @@ function render() {
     const message = registrants.length === 0
       ? "No registrants yet. Add the first participant above."
       : "No participants match your search.";
-    body.innerHTML = `<tr class="empty-row"><td colspan="8">${message}</td></tr>`;
+    body.innerHTML = `<tr class="empty-row"><td colspan="9">${message}</td></tr>`;
     return;
   }
 
@@ -118,6 +118,7 @@ function render() {
           <td>${escapeHtml(r.contact)}</td>
           <td>${escapeHtml(r.occupation)}</td>
           <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
+          <td>${escapeHtml(r.tshirt_size || "medium")}</td>
           <td>${statusBadgeHtml(amountPaid, programFee)}</td>
           <td>${paymentEditor}</td>
           <td class="entered-cell">${formatDateTime(r.created_at)}</td>
@@ -156,6 +157,7 @@ async function addRegistrant() {
   const contact = document.getElementById("contact").value.trim();
   const occupation = document.getElementById("occupation").value.trim();
   const tshirt = document.getElementById("tshirt").value;
+  const tshirtSize = document.getElementById("tshirt-size").value;
   const amountPaid = parseFloat(document.getElementById("amount-paid").value) || 0;
 
   formError.style.display = "none";
@@ -171,6 +173,7 @@ async function addRegistrant() {
     contact,
     occupation,
     tshirt_color: tshirt,
+    tshirt_size: tshirtSize,
     amount_paid: amountPaid,
   });
 
@@ -185,6 +188,7 @@ async function addRegistrant() {
   document.getElementById("occupation").value = "";
   document.getElementById("amount-paid").value = "";
   document.getElementById("tshirt").value = "yellow";
+  document.getElementById("tshirt-size").value = "medium";
 
   await loadRegistrants();
 }

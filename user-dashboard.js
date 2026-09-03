@@ -50,12 +50,12 @@ function render(registrants) {
   statCount.textContent = registrants.length;
 
   const hasRegistration = registrants.length > 0;
-  ["name", "contact", "occupation", "tshirt", "add-btn"].forEach((id) => {
+  ["name", "contact", "occupation", "tshirt", "tshirt-size", "add-btn"].forEach((id) => {
     document.getElementById(id).disabled = hasRegistration;
   });
 
   if (registrants.length === 0) {
-    body.innerHTML = `<tr class="empty-row"><td colspan="4">You have not registered yet.</td></tr>`;
+    body.innerHTML = `<tr class="empty-row"><td colspan="5">You have not registered yet.</td></tr>`;
     return;
   }
 
@@ -68,6 +68,7 @@ function render(registrants) {
           <td>${escapeHtml(r.contact)}</td>
           <td>${escapeHtml(r.occupation)}</td>
           <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
+          <td>${escapeHtml(r.tshirt_size || "medium")}</td>
         </tr>`;
     })
     .join("");
@@ -85,6 +86,7 @@ async function addRegistrant() {
   const contact = document.getElementById("contact").value.trim();
   const occupation = document.getElementById("occupation").value.trim();
   const tshirt = document.getElementById("tshirt").value;
+  const tshirtSize = document.getElementById("tshirt-size").value;
 
   formError.style.display = "none";
 
@@ -100,6 +102,7 @@ async function addRegistrant() {
     contact,
     occupation,
     tshirt_color: tshirt,
+    tshirt_size: tshirtSize,
   });
 
   if (error) {
@@ -112,6 +115,7 @@ async function addRegistrant() {
   document.getElementById("contact").value = "";
   document.getElementById("occupation").value = "";
   document.getElementById("tshirt").value = "yellow";
+  document.getElementById("tshirt-size").value = "medium";
 
   document.getElementById("name").disabled = true;
   document.getElementById("contact").disabled = true;
