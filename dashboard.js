@@ -12,7 +12,7 @@ const statPaid = document.getElementById("stat-paid");
 const statTotal = document.getElementById("stat-total");
 const formError = document.getElementById("form-error");
 const searchInput = document.getElementById("participant-search");
-const TSHIRT_SIZES = ["small", "medium", "large"];
+const TSHIRT_SIZES = ["small", "medium", "large", "xl", "xxl", "xxxl"];
 
 let registrants = [];
 let programFee = 50;

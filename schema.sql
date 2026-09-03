@@ -8,7 +8,6 @@ create table if not exists registrants (
   contact text not null,
   occupation text not null,
   tshirt_color text not null check (tshirt_color in ('yellow', 'blue-black', 'red', 'white')),
-  tshirt_size text not null default 'medium' check (tshirt_size in ('small', 'medium', 'large')),
   amount_paid numeric not null default 0,
   created_at timestamptz not null default now()
 );
@@ -19,7 +18,7 @@ alter table registrants add column if not exists user_id uuid references auth.us
 alter table registrants add column if not exists tshirt_size text not null default 'medium';
 alter table registrants drop constraint if exists registrants_tshirt_size_check;
 alter table registrants add constraint registrants_tshirt_size_check
-  check (tshirt_size in ('small', 'medium', 'large'));
+  check (tshirt_size in ('small', 'medium', 'large', 'xl', 'xxl', 'xxxl'));
 create unique index if not exists one_registration_per_user
   on registrants (user_id) where user_id is not null;
 
