@@ -56,6 +56,25 @@ h1, h2, .font-serif {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
+.site-footer {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.login-page .site-footer {
+  position: absolute;
+  right: 24px;
+  bottom: 16px;
+  left: 24px;
+}
+
+.dashboard-footer {
+  padding: 24px 18px 28px;
+  color: var(--muted);
+}
+
 .login-badge {
   display: flex;
   align-items: center;
@@ -85,6 +104,12 @@ h1, h2, .font-serif {
   font-size: 13px;
   color: var(--ink-soft);
   margin-bottom: 6px;
+}
+
+.reference-field label span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .field-input {
@@ -532,7 +557,7 @@ tbody tr:nth-child(even) { background: #FCF9F8; }
 @media (max-width: 520px) {
   .login-page {
     align-items: flex-start;
-    padding: max(16px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
+    padding: max(16px, env(safe-area-inset-top)) 14px max(52px, env(safe-area-inset-bottom));
   }
   .login-card {
     max-width: 100%;
@@ -553,6 +578,7 @@ tbody tr:nth-child(even) { background: #FCF9F8; }
   }
   .btn-primary { min-height: 48px; }
   .login-footnote { line-height: 1.5; margin-top: 20px; }
+  .login-page .site-footer { bottom: 12px; }
   .dashboard-header { padding: 16px 18px; }
   .logo-slot { width: 36px; height: 36px; flex-basis: 36px; }
   .brand-lockup { gap: 9px; }
