@@ -1,5 +1,12 @@
 const statCount = document.getElementById("stat-count");
 const formError = document.getElementById("form-error");
+const registrationBody = document.getElementById("my-registration-body");
+const TSHIRT_LABELS = {
+  yellow: { label: "Yellow", swatch: "#D4A017" },
+  "blue-black": { label: "Blue-Black", swatch: "#1B2A4A" },
+  red: { label: "Red", swatch: "#A32638" },
+  white: { label: "White", swatch: "#F2EFEA" },
+};
 
 // ---------- Auth guard ----------
 async function guardSession() {
@@ -41,6 +48,33 @@ async function loadRegistrationStatus() {
   ["name", "contact", "occupation", "tshirt", "tshirt-size", "add-btn"].forEach((id) => {
     document.getElementById(id).disabled = hasRegistration;
   });
+}
+
+async function loadMyRegistration() {
+  const { data, error } = await supabaseClient
+    .from("registrants_user_view")
+    .select("name, contact, occupation, tshirt_color, tshirt_size")
+    .eq("user_id", currentUserId)
+    .maybeSingle();
+  if (error) return;
+  if (!data) {
+    registrationBody.innerHTML = `<tr class="empty-row"><td colspan="5">You have not registered yet.</td></tr>`;
+    return;
+  }
+  const tshirt = TSHIRT_LABELS[data.tshirt_color] || { label: data.tshirt_color, swatch: "#ccc" };
+  registrationBody.innerHTML = `<tr>
+    <td>${escapeHtml(data.name)}</td>
+    <td>${escapeHtml(data.contact)}</td>
+    <td>${escapeHtml(data.occupation)}</td>
+    <td><span class="swatch" style="background:${tshirt.swatch};"></span>${tshirt.label}</td>
+    <td>${escapeHtml(data.tshirt_size || "medium")}</td>
+  </tr>`;
+}
+
+function escapeHtml(value) {
+  const element = document.createElement("div");
+  element.textContent = value ?? "";
+  return element.innerHTML;
 }
 
 // ---------- Insert one personal registration (amount_paid always defaults to 0) ----------
@@ -86,6 +120,7 @@ async function addRegistrant() {
   document.getElementById("tshirt").disabled = true;
   document.getElementById("add-btn").disabled = true;
   await loadRegistrationCount();
+  await loadMyRegistration();
 }
 
 document.getElementById("add-btn").addEventListener("click", addRegistrant);
@@ -98,4 +133,5 @@ document.getElementById("add-btn").addEventListener("click", addRegistrant);
   currentUserId = user.id;
   await loadRegistrationCount();
   await loadRegistrationStatus();
+  await loadMyRegistration();
 })();
