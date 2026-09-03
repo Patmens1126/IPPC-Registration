@@ -22,13 +22,13 @@ alter table registrants add column if not exists reference text;
 alter table registrants add column if not exists tshirt_size text not null default 'medium';
 alter table registrants add column if not exists amount_due numeric not null default 100;
 update registrants
-set amount_due = case when lower(trim(coalesce(reference, ''))) = 'soul' then 50 else 100 end;
+set amount_due = case when lower(trim(coalesce(reference, ''))) = 'invitee' then 50 else 100 end;
 alter table registrants drop constraint if exists registrants_tshirt_size_check;
 alter table registrants add constraint registrants_tshirt_size_check
   check (tshirt_size in ('small', 'medium', 'large', 'xl', 'xxl', 'xxxl'));
 alter table registrants drop constraint if exists registrants_amount_due_check;
 alter table registrants add constraint registrants_amount_due_check
-  check (amount_due = case when lower(trim(coalesce(reference, ''))) = 'soul' then 50 else 100 end);
+  check (amount_due = case when lower(trim(coalesce(reference, ''))) = 'invitee' then 50 else 100 end);
 create unique index if not exists one_registration_per_user
   on registrants (user_id) where user_id is not null;
 

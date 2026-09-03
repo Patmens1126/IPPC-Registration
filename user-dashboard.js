@@ -9,7 +9,7 @@ const TSHIRT_LABELS = {
 };
 
 function getAmountDue(reference) {
-  return reference.trim().toLowerCase() === "soul" ? 50 : 100;
+  return reference.trim().toLowerCase() === "invitee" ? 50 : 100;
 }
 
 // ---------- Auth guard ----------
