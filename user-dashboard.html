@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Registration — IPPC</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+ <header class="dashboard-header">
+    <div class="brand-lockup">
+      <div class="logo-slot" aria-label="IPPC logo">
+        <img src="logo.png" alt="IPPC logo" onerror="this.style.display='none'" />
+        <span>IPPC</span>
+      </div>
+      <div>
+        <h1>IPPC Registration</h1>
+        <p>My Registration</p>
+      </div>
+    </div>
+    <button class="btn-logout" id="logout-btn">Log out</button>
+  </header>
+
+  <main class="dashboard-main">
+    <section class="summary-grid summary-grid-narrow">
+      <div class="summary-card">
+        <p class="label">Registrants</p>
+        <p class="value" id="stat-count">0</p>
+      </div>
+    </section>
+
+    <!-- Personal registration form -->
+    <section class="panel">
+      <h2>My Registration</h2>
+      <div class="form-grid">
+        <div>
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Full name" />
+        </div>
+        <div>
+          <label for="contact">Contact</label>
+          <input type="text" id="contact" placeholder="Phone or email" />
+        </div>
+        <div>
+          <label for="occupation">Occupation</label>
+          <input type="text" id="occupation" placeholder="Occupation" />
+        </div>
+        <div>
+          <label for="tshirt">T-Shirt Color</label>
+          <select id="tshirt">
+            <option value="yellow">Yellow</option>
+            <option value="blue-black">Blue-Black</option>
+            <option value="red">Red</option>
+            <option value="white">White</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn-add" id="add-btn">Register me</button>
+        </div>
+      </div>
+      <p id="form-error" class="error-text" style="display:none; margin-top:14px;"></p>
+    </section>
+
+    <!-- Only this user's registration is returned by the database view. -->
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Occupation</th>
+            <th>T-Shirt</th>
+          </tr>
+        </thead>
+        <tbody id="registrants-body">
+          <tr class="empty-row"><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="user-dashboard.js"></script>
+</body>
+</html>

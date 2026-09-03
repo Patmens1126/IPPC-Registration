@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Login — IPPC Registration</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <p class="login-badge">IPPC REGISTRATION</p>
+      <h1 id="form-title">User Login</h1>
+
+      <form id="login-form">
+        <div class="field" id="name-field" hidden>
+          <label for="name">Full name</label>
+          <div class="field-input">
+            <input type="text" id="name" placeholder="Your full name" autocomplete="name" />
+          </div>
+        </div>
+
+        <div class="field" id="phone-field" hidden>
+          <label for="phone">Phone number</label>
+          <div class="field-input">
+            <input type="tel" id="phone" placeholder="e.g. 024 123 4567" autocomplete="tel" inputmode="tel" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <div class="field-input">
+            <input type="email" id="email" placeholder="you@church.org" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="field-input">
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="password-toggle" id="password-toggle" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+        </div>
+
+        <p id="error-text" class="error-text" style="display:none;"></p>
+
+        <div class="field-row">
+          <label><input type="checkbox" id="remember" /> Remember me</label>
+          <span class="forgot-link">Forgot Password</span>
+        </div>
+
+        <button type="submit" class="btn-primary" id="login-btn">Login</button>
+      </form>
+
+      <p class="login-footnote" id="form-switch">New user? <button type="button" class="link-button" id="signup-toggle">Create an account</button></p>
+      <p class="portal-switch"><a href="admin-login.html">Admin login</a></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
